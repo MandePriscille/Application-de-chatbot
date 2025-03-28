@@ -25,7 +25,6 @@ def chat(request):
         }
 
         response = requests.post(url, headers=headers, json=data)
-        print("++++++++++++++++++++++", response.status_code)
         if response.status_code == 200:
             chat_response = response.json()['choices'][0]['message']['content']
             return JsonResponse({'response': chat_response})

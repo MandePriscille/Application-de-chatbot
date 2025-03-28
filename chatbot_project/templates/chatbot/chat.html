@@ -1,29 +1,56 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Chatbot</title>
-</head>
-<body>
-    <h1>Chatbot avec ChatGPT</h1>
-    <textarea id="message" rows="4" cols="50"></textarea><br>
-    <button onclick="sendMessage()">Envoyer</button>
-    <p><strong>Réponse :</strong> <span id="response"></span></p>
+{% extends "chatbot/base.html" %}
 
-    <script>
-        function sendMessage() {
-            const message = document.getElementById('message').value;
-            fetch('/chat/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'message=' + encodeURIComponent(message)
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('response').innerText = data.response || data.error;
-            });
-        }
-    </script>
-</body>
-</html>
+{% block css %}
+<style>
+    *{
+        background-color:rgb(19, 134, 211);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Chatbot avec ChatGPT</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="message">Votre message :</label>
+                        <textarea id="message" rows="4" class="form-control" placeholder="Tapez votre message ici..."></textarea>
+                    </div>
+                    <button onclick="sendMessage()" class="btn btn-success mt-3">Envoyer</button>
+                    <div class="mt-4">
+                        <h5>Réponse :</h5>
+                        <div id="response" class="border p-3 rounded bg-light"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- Inclusion de Marked.js depuis un CDN -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    function sendMessage() {
+        const message = document.getElementById('message').value;
+        fetch('/chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'message=' + encodeURIComponent(message)
+        })
+        .then(response => response.json())
+        .then(data => {
+            const markdownContent = data.response || data.error;
+            document.getElementById('response').innerHTML = marked.parse(markdownContent);
+        });
+    }
+</script>
+{% endblock %}
